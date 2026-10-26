@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[제안서] 항온항습기 제조·유지보수 지능화를 위한 사내 구축형 AI Agent 도입 제안</title>
+<style>
+  :root {
+    --bg-dark: #0f172a;
+    --bg-slide: #ffffff;
+    --primary: #1e3a8a;
+    --primary-light: #2563eb;
+    --accent-green: #059669;
+    --accent-purple: #7c3aed;
+    --accent-amber: #d97706;
+    --text-main: #0f172a;
+    --text-sub: #475569;
+    --border-weak: #e2e8f0;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', 'Pretendard', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+
+  /* 슬라이드 뷰포트 (16:9 비율 유지) */
+  .deck-wrapper {
+    position: relative;
+    width: min(94vw, calc(88vh * 16 / 9));
+    height: min(88vh, calc(94vw * 9 / 16));
+    background: var(--bg-slide);
+    border-radius: 16px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 42px 54px 56px 54px;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #ffffff;
+    animation: fadeIn 0.25s ease-out;
+  }
+
+  .slide.active {
+    display: flex;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 표지 슬라이드 */
+  .slide.cover {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%);
+    color: #ffffff;
+    justify-content: center;
+    padding: 64px 72px;
+  }
+
+  .cover-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 24px;
+    width: fit-content;
+  }
+
+  .cover h1 {
+    font-size: 42px;
+    line-height: 1.28;
+    font-weight: 800;
+    margin-bottom: 18px;
+    letter-spacing: -0.5px;
+  }
+
+  .cover p.subtitle {
+    font-size: 20px;
+    color: #cbd5e1;
+    line-height: 1.5;
+    margin-bottom: 40px;
+  }
+
+  .cover-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 12px;
+  }
+
+  .cover-card {
+    background: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+
+  .cover-card .label {
+    font-size: 13px;
+    color: #93c5fd;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .cover-card .val {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.4;
+  }
+
+  /* 일반 슬라이드 헤더 */
+  .slide-header {
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .slide-header .step-tag {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--primary-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .slide-header h2 {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.4px;
+  }
+
+  .slide-header .header-note {
+    font-size: 13.5px;
+    color: var(--text-sub);
+    background: #f1f5f9;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-weight: 600;
+  }
+
+  .slide-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 0;
+  }
+
+  /* 공통 카드 및 그리드 */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  .card {
+    background: #f8fafc;
+    border: 1px solid var(--border-weak);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+
+  .card.highlight {
+    background: #eff6ff;
+    border: 2px solid #3b82f6;
+  }
+
+  .card h3 {
+    font-size: 17px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .card ul li {
+    font-size: 14px;
+    line-height: 1.45;
+    color: #334155;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .card ul li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--primary-light);
+    font-weight: bold;
+  }
+
+  /* 다이어그램 전용 스타일 (Slide 3) */
+  .arch-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    justify-content: space-between;
+  }
+
+  .arch-layer {
+    border-radius: 10px;
+    padding: 11px 18px;
+    text-align: center;
+  }
+
+  .arch-user {
+    background: #dbeafe;
+    border: 2px solid #3b82f6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .arch-core {
+    background: #1e293b;
+    color: #ffffff;
+    border: 2px solid #0f172a;
+    padding: 12px 20px;
+  }
+
+  .arch-core-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .arch-step-box {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .arch-arrow {
+    text-align: center;
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #2563eb;
+    line-height: 1.1;
+  }
+
+  .arch-hybrid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 14px;
+  }
+
+  .arch-local {
+    background: #ecfdf5;
+    border: 2px solid #10b981;
+    border-radius: 10px;
+    padding: 10px 16px;
+    text-align: left;
+  }
+
+  .arch-cloud {
+    background: #f5f3ff;
+    border: 2px dashed #8b5cf6;
+    border-radius: 10px;
+    padding: 10px 16px;
+    text-align: left;
+  }
+
+  .arch-tools {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .arch-tool-box {
+    background: #fff7ed;
+    border: 1.5px solid #f97316;
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+
+  /* 테이블 스타일 */
+  table.clean-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  table.clean-table th {
+    background: #1e3a8a;
+    color: #ffffff;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 700;
+  }
+
+  table.clean-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #1e293b;
+    line-height: 1.4;
+  }
+
+  table.clean-table tr:nth-child(even) td {
+    background: #f8fafc;
+  }
+
+  /* 배지 및 버튼 */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-green { background: #d1fae5; color: #065f46; }
+  .badge-purple { background: #ede9fe; color: #5b21b6; }
+  .badge-amber { background: #fef3c7; color: #92400e; }
+
+  .demo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #2563eb;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 700;
+    transition: background 0.15s;
+  }
+  .demo-btn:hover {
+    background: #1d4ed8;
+  }
+
+  /* 하단 컨트롤 바 */
+  .deck-controls {
+    position: fixed;
+    bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+    padding: 8px 20px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #f8fafc;
+    z-index: 100;
+  }
+
+  .ctrl-btn {
+    background: rgba(255, 255, 255, 0.12);
+    border: none;
+    color: #ffffff;
+    padding: 6px 14px;
+    border-radius: 99px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    transition: background 0.15s;
+  }
+
+  .ctrl-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .page-indicator {
+    font-size: 13.5px;
+    font-weight: 700;
+    min-width: 65px;
+    text-align: center;
+    color: #93c5fd;
+  }
+
+  /* 인쇄(PDF 저장) 시 슬라이드별 1페이지 자동 분할 */
+  @media print {
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+    body {
+      background: #ffffff;
+      height: auto;
+      width: auto;
+      overflow: visible;
+      display: block;
+    }
+    .deck-wrapper {
+      width: 100%;
+      height: auto;
+      box-shadow: none;
+      border-radius: 0;
+    }
+    .slide {
+      position: relative;
+      display: flex !important;
+      width: 100vw;
+      height: 100vh;
+      page-break-after: always;
+      break-after: page;
+    }
+    .deck-controls {
+      display: none !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck-wrapper">
+
+  <!-- ==================== SLIDE 1: 표지 ==================== -->
+  <section class="slide cover active">
+    <div>
+      <div class="cover-badge">🚀 On-Premise Hybrid AI Agent Platform</div>
+      <h1>항온항습기 제조 · 유지보수 지능화를 위한<br>사내 구축형 AI Agent 도입 제안서</h1>
+      <p class="subtitle">
+        사내 로컬 LLM(보안·무과금)을 기본 두뇌로 사용하고 필요시 외부 고성능 AI API를 결합하여<br>
+        ERP · MES · 설비유지보수(하자점검·예지보전)를 하나로 연결하는 자율형 AI 업무 비서
+      </p>
+      <div class="cover-grid">
+        <div class="cover-card">
+          <div class="label">제안 대상</div>
+          <div class="val">항온항습기(정밀공조)<br>제조 및 유지보수 기업</div>
+        </div>
+        <div class="cover-card">
+          <div class="label">구축 형태</div>
+          <div class="val">사내 구축형(로컬 LLM)<br>+ 외부 AI API 하이브리드</div>
+        </div>
+        <div class="cover-card">
+          <div class="label">핵심 연계 도메인</div>
+          <div class="val">ERP(회계·계약) · MES(관제)<br>설비보전(하자·예지보전)</div>
+        </div>
+        <div class="cover-card">
+          <div class="label">차별화 강점</div>
+          <div class="val">100% 실동작 검증 완료<br>즉시 Live PoC 시연 가능</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SLIDE 2: AI Agent란 무엇인가? ==================== -->
+  <section class="slide">
+    <div class="slide-header">
+      <div>
+        <div class="step-tag">01. Concept & Paradigm Shift</div>
+        <h2>AI Agent(에이전트)란 무엇인가? — 기존 챗봇과의 결정적 차이</h2>
+      </div>
+      <div class="header-note">단순 대화형 챗봇에서 '도구를 쓰는 디지털 실무자'로 진화</div>
+    </div>
+
+    <div class="slide-body">
+      <div class="grid-2">
+        <div class="card">
+          <h3>💬 기존 단순 AI 챗봇 (LLM 단독)</h3>
+          <ul>
+            <li>사전 학습된 일반 상식으로만 텍스트 답변 생성 ("말만 하는 사전")</li>
+            <li><strong>사내 실시간 데이터 조회 불가</strong> (오늘 전표, 시운전 로그, 하자이력 모름)</li>
+            <li>모든 질문을 외부 클라우드로 전송하여 <strong>원가·설계·고객 정보 유출 우려</strong></li>
+            <li>사용자가 물어볼 때만 수동적으로 응답 (실시간 감시·선제 알림 불가)</li>
+          </ul>
+        </div>
+        <div class="card highlight">
+          <h3>🤖 제안하는 기업용 AI Agent (Tool + RAG + Action)</h3>
+          <ul>
+            <li>질문 의도를 분석하여 <strong>사내 DB · 센서 모델 · 매뉴얼 도구를 직접 실행</strong></li>
+            <li><strong>ERP SQL 자동 생성, MES 시계열 구간 분석, 하자점검보고서 즉시 검색</strong></li>
+            <li><strong>사내 로컬 LLM 기본 처리(보안·무과금)</strong> + 필요시 외부 AI API 선택 호출</li>
+            <li>설비 이상 징후 포착 시 <strong>원인 진단 후 담당자 휴대폰(텔레그램) 선제 경보</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <table class="clean-table">
+        <thead>
+          <tr>
+            <th style="width:18%">비교 항목</th>
+            <th style="width:38%">기존 단순 AI 챗봇</th>
+            <th style="width:44%">사내 구축형 AI Agent (본 제안 모델)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>작동 메커니즘</strong></td>
+            <td>질문 입력 → LLM 텍스트 추론 → 단순 답변</td>
+            <td><strong>의도 파악(Router) → 사내 플러그인(SQL/RAG/ONNX) 실행 → 종합 리포트 & 액션</strong></td>
+          </tr>
+          <tr>
+            <td><strong>환각(거짓말) 통제</strong></td>
+            <td>모르는 사내 정보도 그럴듯하게 지어내어 답변</td>
+            <td><strong>실제 사내 DB 조회 결과와 매뉴얼 원문(출처 명시)에 근거해서만 정확히 답변</strong></td>
+          </tr>
+          <tr>
+            <td><strong>보안 및 운영비</strong></td>
+            <td>질문마다 외부 API 종량제 과금 & 데이터 외부 전송</td>
+            <td><strong>사내 로컬 LLM으로 민감 데이터 100% 내부 처리 (고난도/OCR만 외부 API 선택 사용)</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==================== SLIDE 3: 기본 개념 및 하이브리드 추론 다이어그램 ==================== -->
+  <section class="slide">
+    <div class="slide-header">
+      <div>
+        <div class="step-tag">02. Core Architecture Diagram</div>
+        <h2>AI Agent 기본 작동 원리 및 하이브리드 LLM 구성도</h2>
+      </div>
+      <div class="header-note">사내 로컬 LLM(기본) + 외부 고성능 AI API(선택) 하이브리드</div>
+    </div>
+
+    <div class="slide-body">
+      <div class="arch-diagram">
+        <!-- Layer 1: User -->
+        <div class="arch-layer arch-user">
+          <div style="font-weight:800; color:#1e3a8a; font-size:15px;">👤 사용자 접점 (임직원 & 현장 출동 기사)</div>
+          <div style="display:flex; gap:12px; font-size:13.5px; font-weight:700; color:#1e293b;">
+            <span class="badge badge-blue">🖥️ 사내 웹 대시보드 (PC/태블릿)</span>
+            <span class="badge badge-blue">📱 현장 모바일 봇 (텔레그램 양방향 알림/질의)</span>
+          </div>
+        </div>
+
+        <div class="arch-arrow">▲▼ 자연어 질문 / 명판·명함 사진 전송 / 실시간 이상 경보 · 분석 리포트 수신</div>
+
+        <!-- Layer 2: Agent Core -->
+        <div class="arch-layer arch-core">
+          <div style="font-weight:800; font-size:15.5px; color:#93c5fd;">
+            🧠 사내 구축형 AI Agent 코어 (Microsoft Semantic Kernel 멀티 에이전트 라우터)
+          </div>
+          <div class="arch-core-steps">
+            <div class="arch-step-box">
+              <strong>1️⃣ 의도 파악 & 라우팅</strong><br>
+              질문 도메인(회계/하자보전/MES/지식) 자동 분류 및 전문 에이전트 배정
+            </div>
+            <div class="arch-step-box">
+              <strong>2️⃣ 사내 도구(Plugin) 자율 실행</strong><br>
+              Text-to-SQL 쿼리 실행 · 매뉴얼/하자이력 벡터 검색 · 센서 ONNX 추론
+            </div>
+            <div class="arch-step-box">
+              <strong>3️⃣ 결과 종합 & 액션 수행</strong><br>
+              표/차트 리포트 생성 · 스마트폰 선제 경보 발송 · 점검일지 초안 작성
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1.15fr 0.85fr; text-align:center; font-size:12.5px; font-weight:800;">
+          <div style="color:#047857;">◀━━━ [기본 90%: 사내 보안 추론 (무과금)] ━━━</div>
+          <div style="color:#6d28d9;">━━━ [선택 10%: 고난도 분석 / Vision OCR] ━━━▶</div>
+        </div>
+
+        <!-- Layer 3: Hybrid Brain -->
+        <div class="arch-hybrid">
+          <div class="arch-local">
+            <div style="font-weight:800; color:#065f46; font-size:15px; margin-bottom:4px;">
+              🏠 [기본 두뇌] 사내 로컬 LLM & ONNX 엔진 (On-Premise)
+            </div>
+            <div style="font-size:13px; color:#064e3b; line-height:1.45;">
+              • <strong>Ollama (Local LLM) + ONNX Runtime</strong> 사내 서버 직접 구동<br>
+              • ERP 원가·재무·고객사 설비 데이터 <strong>외부 반출 0% (폐쇄망 완벽 동작)</strong><br>
+              • 월 고정 API 비용 없이 전 직원·현장 기사 무제한 질의 및 실시간 추론
+            </div>
+          </div>
+          <div class="arch-cloud">
+            <div style="font-weight:800; color:#5b21b6; font-size:15px; margin-bottom:4px;">
+              ☁️ [선택 두뇌] 외부 고성능 AI API (Hybrid 연동)
+            </div>
+            <div style="font-size:13px; color:#4c1d95; line-height:1.45;">
+              • <strong>Google Gemini / OpenAI API</strong> 필요시 선택 호출<br>
+              • <strong>명함·설비 명판 Vision OCR 인식</strong>, 3,072차원 고정밀 문서 임베딩<br>
+              • 환경설정(<code>appsettings.json</code>)으로 로컬↔외부 모델 즉시 전환
+            </div>
+          </div>
+        </div>
+
+        <div class="arch-arrow" style="color:#b45309;">▲▼ 사내 기간계 DB 및 설비 센서 도구(Plugin) 직접 실행 (SELECT 읽기전용 안전 가드레일)</div>
+
+        <!-- Layer 4: Tools -->
+        <div class="arch-tools">
+          <div class="arch-tool-box">
+            <div style="font-weight:800; color:#9a3412; font-size:14px;">💰 ERP / 회계 DB</div>
+            <div style="font-size:12.5px; color:#431407; margin-top:2px;">전표·원가·미수금·계약<br>(AccountSqlPlugin)</div>
+          </div>
+          <div class="arch-tool-box">
+            <div style="font-weight:800; color:#9a3412; font-size:14px;">🏭 MES / 수신로그</div>
+            <div style="font-size:12.5px; color:#431407; margin-top:2px;">시운전·5분 수신로그·Grafana<br>(Gaps & Islands 구간분석)</div>
+          </div>
+          <div class="arch-tool-box">
+            <div style="font-weight:800; color:#9a3412; font-size:14px;">🛠️ 항온항습기 보전</div>
+            <div style="font-size:12.5px; color:#431407; margin-top:2px;">하자점검보고서(온도/고압)<br>장비매뉴얼(pgvector RAG)</div>
+          </div>
+          <div class="arch-tool-box">
+            <div style="font-weight:800; color:#9a3412; font-size:14px;">📡 실시간 설비 센서</div>
+            <div style="font-size:12.5px; color:#431407; margin-top:2px;">항온항습기·컴프레서·모터<br>(ONNX 실시간 예지보전)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SLIDE 4: 제안 배경 (항온항습기 산업 특화) ==================== -->
+  <section class="slide">
+    <div class="slide-header">
+      <div>
+        <div class="step-tag">03. Background & Pain Points</div>
+        <h2>왜 항온항습기 제조 · 유지보수에 AI Agent가 필요한가?</h2>
+      </div>
+      <div class="header-note">맞춤형 수주 제조(ERP/MES)와 장기 현장 유지보수(A/S)의 결합</div>
+    </div>
+
+    <div class="slide-body">
+      <div class="grid-3">
+        <div class="card">
+          <span class="badge badge-amber" style="margin-bottom:10px;">과제 1 · 현장 유지보수(A/S)</span>
+          <h3>출동 기사 숙련도 편차 및 암묵지 유실</h3>
+          <ul>
+            <li>여름철 <strong>고압 차단(High Pressure Trip)</strong>, 겨울철 가습기/히터 불량, 결로 등 계절성 장애 빈발</li>
+            <li>수천 건의 <code>하자점검보고서</code>가 쌓여 있으나 현장에서 유사 증상(조치전 온도·고압)을 즉시 찾기 어려움</li>
+            <li>신입/초급 기사가 현장에서 숙련자에게 전화로 물어봐야 하는 비효율 발생</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="badge badge-blue" style="margin-bottom:10px;">과제 2 · 시운전 및 원격 관제</span>
+          <h3>24시간 수신로그 및 센서 감시의 한계</h3>
+          <ul>
+            <li>납품 장비 및 시운전 라인에서 5분 주기로 수집되는 <code>rclog</code>와 온습도·전류·진동 데이터의 방대한 양</li>
+            <li>사람이 그래프를 일일이 눈으로 보고 <strong>언제 가동이 멈췄고 언제 급락(Anomaly)했는지</strong> 판별하기 불가능</li>
+            <li>컴프레서 소손 등 치명적 고장이 발생한 뒤에야 사후 출동하는 악순환</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="badge badge-purple" style="margin-bottom:10px;">과제 3 · 경영·원가·계약 분절</span>
+          <h3>ERP · MES · 보전 이력의 데이터 사일로</h3>
+          <ul>
+            <li>특정 고객사 납품 장비의 <strong>제조 원가(ERP), 시운전 기록(MES), 무상보증 만료일 및 고장 이력</strong>이 각각 분리됨</li>
+            <li>거래처별 미수금, 부품(컴프레서·냉매·필터) 매입 단가 추이를 보려면 복잡한 전표 화면을 수작업 집계해야 함</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card highlight" style="padding:16px 24px;">
+        <h3 style="margin-bottom:6px; color:#1e3a8a;">🎯 도입 목표: "현장 기사의 스마트폰과 관리자의 PC에 15년 경력의 AI 수석 엔지니어를 탑재"</h3>
+        <p style="font-size:14.5px; color:#1e293b; line-height:1.5;">
+          사내에 축적된 <strong>하자점검보고서 · 장비 매뉴얼 · 15년치 업무일지 · ERP 전표 · 실시간 센서 로그</strong>를 단일 AI Agent 허브로 통합하여,
+          자연어 질문 한 번으로 진단부터 원가 분석, 모바일 경보까지 즉시 해결합니다.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SLIDE 5: 도메인 연계 1 (유지보수 & MES) ==================== -->
+  <section class="slide">
+    <div class="slide-header">
+      <div>
+        <div class="step-tag">04. Domain Integration (Maintenance & MES)</div>
+        <h2>핵심 연계 ① 장비유지보수(하자·예지보전) & ② MES 시운전 관제</h2>
+      </div>
+      <div class="header-note">기구축 실증 플러그인: DefectAnalysis · SensorAnomaly · RcLog</div>
+    </div>
+
+    <div class="slide-body">
+      <div class="grid-2" style="flex:1;">
+        <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <span class="badge badge-green" style="margin-bottom:8px;">연계 1 · 장비유지보수(EAM/PdM) 에이전트</span>
+            <h3>🛠️ 항온항습기 하자진단 & ONNX 실시간 예지보전</h3>
+            <ul>
+              <li><strong>하자점검보고서 하이브리드 RAG 검색</strong>:<br>
+                <code>장비명</code>, <code>장애내용</code>, <code>시정</code>, <code>재발방지대책</code>, <code>조치전_온도</code>, <code>조치전_고압</code> 데이터를 통계 SQL + <code>pgvector</code> 의미 검색으로 결합 조회</li>
+              <li><strong>계절별/월별 다발성 고장 자동 분석</strong>:<br>
+                하절기(응축기 코일 오염·고압차단) / 동절기(가습기·히터) 장애 점유율 및 사전 점검표 자동 생성</li>
+              <li><strong>ONNX 딥러닝 실시간 센서 이상 감지</strong>:<br>
+                • 센서 1 (<code>model_sensor1_hvac.onnx</code>): 항온항습기 온습도·고압/저압 이상 추론<br>
+                • 센서 2 (<code>model_sensor2_motor.onnx</code>): 컴프레서·송풍팬 모터 전류/진동 추론</li>
+              <li><strong>장비 매뉴얼 RAG 연동</strong>: 제어기 에러코드·부품 교체 매뉴얼 즉시 제시</li>
+            </ul>
+          </div>
+          <div style="background:#ecfdf5; border:1px solid #a7f3d0; padding:10px 14px; border-radius:8px; font-size:13px; color:#065f46;">
+            💬 <strong>현장 기사 질의 예시</strong>: <em>"조치전 온도가 28도 이상이고 고압이 높게 걸리면서 멈추는 장애 사례와 해결책 찾아줘"</em> → 과거 유사 사례 15건 및 조치법 3초 내 응답
+          </div>
+        </div>
+
+        <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <span class="badge badge-blue" style="margin-bottom:8px;">연계 2 · MES / 원격 수신로그 에이전트</span>
+            <h3>🏭 시운전 · 원격 수신로그 자동 구간 분석 & Grafana 관제</h3>
+            <ul>
+              <li><strong>Gaps & Islands 시계열 상태 머신 자동 분류</strong>:<br>
+                5분 주기 수신로그(<code>rclog</code>)의 전후 수량을 윈도우 함수(<code>LAG/LEAD</code>)로 비교하여 4대 상태를 DB 레벨에서 자동 판별:<br>
+                • 🟢 <strong>RUNNING (정상 가동)</strong> / ⚪ <strong>IDLE (대기·휴지)</strong><br>
+                • 🟡 <strong>TRANSITION (과도 구간)</strong> / 🔴 <strong>ANOMALY (돌발 이상 급락)</strong></li>
+              <li><strong>구간별 지속시간 · 평균/최대치 · 누적 생산량 자동 집계</strong>:<br>
+                사람이 차트를 일일이 찾지 않아도 오늘 몇 시부터 몇 시까지 몇 분간 돌발 급락이 발생했는지 표로 즉시 요약</li>
+              <li><strong>외부/모바일 반응형 Grafana 실시간 대시보드 내장</strong>:<br>
+                사내 PC 및 외부 스마트폰에서 Kiosk 전체화면 차트 실시간 모니터링</li>
+            </ul>
+          </div>
+          <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:10px 14px; border-radius:8px; font-size:13px; color:#1e40af;">
+            📊 <strong>관제 효과</strong>: 수만 건의 원시 로그를 <strong>의미 있는 가동/이상 구간 단위로 자동 압축</strong>하여 일일 시운전·가동 리포트 즉시 생성
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SLIDE 6: 도메인 연계 2 (ERP & 지식/모바일) ==================== -->
+  <section class="slide">
+    <div class="slide-header">
+      <div>
+        <div class="step-tag">05. Domain Integration (ERP & Mobile Knowledge)</div>
+        <h2>핵심 연계 ③ ERP 회계·계약 분석 & ④ 15년 지식 자산화 · 모바일 봇</h2>
+      </div>
+      <div class="header-note">기구축 실증 플러그인: AccountSql · GroupwareSearch · TelegramBot</div>
+    </div>
+
+    <div class="slide-body">
+      <div class="grid-2" style="flex:1;">
+        <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <span class="badge badge-purple" style="margin-bottom:8px;">연계 3 · ERP 경영·회계·계약 에이전트</span>
+            <h3>💰 자연어 Text-to-SQL 재무·원가·계약 분석</h3>
+            <ul>
+              <li><strong>복잡한 전표·원장 화면 없이 대화형 즉시 집계</strong>:<br>
+                질문 의도에 맞춰 에이전트가 PostgreSQL ERP DB(`account`)의 스키마를 참조해 안전한 <code>SELECT</code> SQL을 자동 작성·실행</li>
+              <li><strong>거래처별 매출·매입·미수금·원가율 실시간 분석</strong>:<br>
+                컴프레서·열교환기·제어보드 등 핵심 자재 매입 추이 및 프로젝트별 수익성 즉시 리포팅</li>
+              <li><strong>유지보수 계약 및 무상보증 만료 연계</strong>:<br>
+                고객사별 납품 장비의 무상 A/S 종료 도래 건, 유상 유지보수 재계약 대상 목록 자동 추출</li>
+              <li><strong>Vision AI 명함·거래처 자동 등록</strong>:<br>
+                스마트폰으로 촬영한 명함을 OCR로 파싱하여 주소록/거래처 DB에 즉시 등록</li>
+            </ul>
+          </div>
+          <div style="background:#f5f3ff; border:1px solid #ddd6fe; padding:10px 14px; border-radius:8px; font-size:13px; color:#5b21b6;">
+            🔒 <strong>안전 가드레일(Safety Guardrail)</strong>: 에이전트 SQL은 읽기 전용(Read-Only)만 허용하여 기간계 재무 데이터 훼손 위험 원천 차단
+          </div>
+        </div>
+
+        <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <span class="badge badge-amber" style="margin-bottom:8px;">연계 4 · 전사 지식 RAG & 텔레그램 현장 비서</span>
+            <h3>📱 15년치 기술·업무 노하우 자산화 및 모바일 양방향 연동</h3>
+            <ul>
+              <li><strong>15년치 업무일지 · 프로젝트 · 자료실 통합 벡터 검색</strong>:<br>
+                과거 15년간 축적된 현장 공사 기록, 시운전 특이사항, 도면/기술문서를 <code>pgvector</code>(3,072차원)로 임베딩하여 퇴사자/숙련자 암묵지 영구 보존</li>
+              <li><strong>텔레그램 봇(<code>@bnimemo_bot</code>) 실시간 양방향 연동</strong>:<br>
+                • AI 분석 결과를 텔레그램 지원 HTML로 자동 변환 및 3,500자 스마트 청킹(<code>[1/N]</code>) 발송<br>
+                • <strong>1클릭 [내 폰 전송]</strong> 및 부서 <strong>[메모 채널 공유]</strong> 분리 구성</li>
+              <li><strong>프롬프트 핫리로드(Hot-Reload) 관리</strong>:<br>
+                서버 재시작 없이 웹 화면에서 도메인별 에이전트 지침(<code>.md</code>)을 즉시 수정·튜닝</li>
+            </ul>
+          </div>
+          <div style="background:#fffbeb; border:1px solid #fde68a; padding:10px 14px; border-radius:8px; font-size:13px; color:#92400e;">
+            📲 <strong>현장 기동성 극대화</strong>: 사무실 밖 기계실/클린룸 현장에서 스마트폰만으로 AI 진단 결과를 받아보고 메모를 동기화
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SLIDE 7: 사내 구축 사양 및 Live PoC 시연 ==================== -->
+  <section class="slide">
+    <div class="slide-header">
+      <div>
+        <div class="step-tag">06. On-Premise Specs & Live PoC Demo</div>
+        <h2>사내 구축형 표준 기술 스택 및 즉시 시연(Live PoC) 시나리오</h2>
+      </div>
+      <div class="header-note">이론적 제안이 아닌 100% 실동작 시스템 즉시 시연</div>
+    </div>
+
+    <div class="slide-body">
+      <table class="clean-table">
+        <thead>
+          <tr>
+            <th style="width:18%">구분</th>
+            <th style="width:28%">구성 기술 스택 (검증 완료)</th>
+            <th style="width:54%">주요 역할 및 사내 구축 강점</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>AI Agent & Web</strong></td>
+            <td><strong>.NET 10 Blazor + Semantic Kernel</strong></td>
+            <td>멀티 에이전트 라우터, 실시간 대화형 UI(MudBlazor v9), 텔레그램 봇 연동</td>
+          </tr>
+          <tr>
+            <td><strong>통합 DB & Vector</strong></td>
+            <td><strong>PostgreSQL 18 + pgvector + pgBackRest</strong></td>
+            <td>기간계 RDB와 3,072차원 벡터 DB 단일 통합, 무중단 증분 백업 체계</td>
+          </tr>
+          <tr>
+            <td><strong>사내 AI + 하이브리드</strong></td>
+            <td><strong>Ollama(로컬 LLM) + ONNX + Gemini API</strong></td>
+            <td>사내 데이터 로컬 추론 기본 + 고난도/Vision OCR 외부 API 선택 호출</td>
+          </tr>
+          <tr>
+            <td><strong>실시간 관제</strong></td>
+            <td><strong>Grafana v13 + ApexCharts</strong></td>
+            <td>5분 주기 수신로그 시계열 구간 분석 및 PC/모바일 통합 대시보드</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="grid-4">
+        <div class="card" style="padding:14px;">
+          <div style="font-size:12px; font-weight:800; color:#2563eb; margin-bottom:4px;">LIVE DEMO 01</div>
+          <h3 style="font-size:15px; margin-bottom:6px;">설비 센서 이상감지</h3>
+          <p style="font-size:12.5px; color:#475569; margin-bottom:10px;">항온항습기/모터 ONNX 실시간 추론 및 텔레그램 경보 시연</p>
+          <a class="demo-btn" href="http://localhost:3918/sensor-anomaly" target="_blank" data-port="3918" data-path="/sensor-anomaly">👉 시연 화면 열기</a>
+        </div>
+        <div class="card" style="padding:14px;">
+          <div style="font-size:12px; font-weight:800; color:#059669; margin-bottom:4px;">LIVE DEMO 02</div>
+          <h3 style="font-size:15px; margin-bottom:6px;">하자점검 AI 진단</h3>
+          <p style="font-size:12.5px; color:#475569; margin-bottom:10px;">계절별 고압차단 통계 및 과거 하자점검보고서 RAG 검색</p>
+          <a class="demo-btn" href="http://localhost:3918/ai-chat" target="_blank" data-port="3918" data-path="/ai-chat">👉 AI 챗봇 열기</a>
+        </div>
+        <div class="card" style="padding:14px;">
+          <div style="font-size:12px; font-weight:800; color:#7c3aed; margin-bottom:4px;">LIVE DEMO 03</div>
+          <h3 style="font-size:15px; margin-bottom:6px;">ERP 회계 SQL 에이전트</h3>
+          <p style="font-size:12.5px; color:#475569; margin-bottom:10px;">자연어 질문으로 매출·매입·거래처 원장 SQL 자동 생성/분석</p>
+          <a class="demo-btn" href="http://localhost:3918/ai-chat" target="_blank" data-port="3918" data-path="/ai-chat">👉 재무 분석 시연</a>
+        </div>
+        <div class="card" style="padding:14px;">
+          <div style="font-size:12px; font-weight:800; color:#d97706; margin-bottom:4px;">LIVE DEMO 04</div>
+          <h3 style="font-size:15px; margin-bottom:6px;">수신로그 & Grafana</h3>
+          <p style="font-size:12.5px; color:#475569; margin-bottom:10px;">5분 수신로그 가동/급락 자동 구간 분석 및 Grafana 관제</p>
+          <a class="demo-btn" href="http://localhost:3918/rclog" target="_blank" data-port="3918" data-path="/rclog">👉 관제 화면 열기</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SLIDE 8: 구축 로드맵 및 기대효과 ==================== -->
+  <section class="slide">
+    <div class="slide-header">
+      <div>
+        <div class="step-tag">07. Roadmap & Expected ROI</div>
+        <h2>단계별 구축 로드맵 (3~4개월) 및 도입 기대 효과</h2>
+      </div>
+      <div class="header-note">검증된 프레임워크 기반으로 구축 기간 및 리스크 최소화</div>
+    </div>
+
+    <div class="slide-body">
+      <div class="grid-3">
+        <div class="card">
+          <span class="badge badge-blue" style="margin-bottom:8px;">Phase 1 (1개월 차)</span>
+          <h3>기반 구축 및 지식 자산화</h3>
+          <ul>
+            <li>사내 서버 PostgreSQL 18 + <code>pgvector</code> 및 로컬 LLM(Ollama) 구축</li>
+            <li>과거 하자점검보고서, 항온항습기 매뉴얼(PDF), 15년치 업무일지 벡터 임베딩 적재</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="badge badge-green" style="margin-bottom:8px;">Phase 2 (2개월 차)</span>
+          <h3>ERP · 보전 멀티 에이전트 오픈</h3>
+          <ul>
+            <li>멀티 에이전트 라우터 가동 (회계/하자보전/그룹웨어/종합)</li>
+            <li>ERP Text-to-SQL 조회 에이전트 및 현장 기사 하자진단 챗봇 현업 적용</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="badge badge-purple" style="margin-bottom:8px;">Phase 3 (3~4개월 차)</span>
+          <h3>실시간 관제 & 예지보전 고도화</h3>
+          <ul>
+            <li>MES/설비 수신로그 자동 구간 분석 및 Grafana 외부/모바일 관제 연동</li>
+            <li>항온항습기·모터 ONNX 이상감지 및 텔레그램 실시간 경보 가동</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card highlight" style="padding:20px 26px;">
+        <h3 style="color:#1e3a8a; margin-bottom:12px;">📈 도입 기대 효과 (Quantitative & Qualitative ROI)</h3>
+        <div class="grid-3" style="gap:16px;">
+          <div style="background:#ffffff; padding:14px 16px; border-radius:10px; border:1px solid #bfdbfe;">
+            <div style="font-size:24px; font-weight:800; color:#1d4ed8; margin-bottom:4px;">70% 이상 단축</div>
+            <div style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:4px;">현장 A/S 초기 진단 및 조치 시간</div>
+            <div style="font-size:12.5px; color:#475569;">온도·고압·알람 증상 입력 즉시 과거 숙련자 조치 이력과 매뉴얼 확보</div>
+          </div>
+          <div style="background:#ffffff; padding:14px 16px; border-radius:10px; border:1px solid #bfdbfe;">
+            <div style="font-size:24px; font-weight:800; color:#059669; margin-bottom:4px;">사전 예방 (PdM)</div>
+            <div style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:4px;">하절기/동절기 피크 시즌 대형 고장 차단</div>
+            <div style="font-size:12.5px; color:#475569;">ONNX 실시간 센서 추론 및 수신로그 급락 감지로 컴프레서 소손 예방</div>
+          </div>
+          <div style="background:#ffffff; padding:14px 16px; border-radius:10px; border:1px solid #bfdbfe;">
+            <div style="font-size:24px; font-weight:800; color:#7c3aed; margin-bottom:4px;">100% 사내 보안</div>
+            <div style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:4px;">원가·설계·고객 데이터 유출 원천 차단</div>
+            <div style="font-size:12.5px; color:#475569;">사내 로컬 LLM 기본 운용으로 보안성과 API 비용 절감 동시 달성</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- 하단 네비게이션 컨트롤 -->
+<div class="deck-controls">
+  <button class="ctrl-btn" onclick="prevSlide()" title="이전 슬라이드 (←)">◀ 이전</button>
+  <span class="page-indicator" id="pageIndicator">1 / 8</span>
+  <button class="ctrl-btn" onclick="nextSlide()" title="다음 슬라이드 (→)">다음 ▶</button>
+  <button class="ctrl-btn" onclick="toggleFullScreen()" title="전체화면 전환 (F11)">⛶ 전체화면</button>
+  <button class="ctrl-btn" onclick="window.print()" title="PDF/인쇄 저장">🖨️ PDF 인쇄</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const indicator = document.getElementById('pageIndicator');
+  let current = 0;
+
+  // 접속 호스트에 맞춰 시연 링크 자동 매핑 (파일로 열었을 때는 localhost 기본 유지)
+  const host = window.location.hostname || 'localhost';
+  document.querySelectorAll('.demo-btn[data-port]').forEach(btn => {
+    const port = btn.getAttribute('data-port');
+    const path = btn.getAttribute('data-path');
+    btn.href = `http://${host}:${port}${path}`;
+  });
+
+  function showSlide(index) {
+    if (index < 0) index = 0;
+    if (index >= slides.length) index = slides.length - 1;
+    slides.forEach((s, i) => s.classList.toggle('active', i === index));
+    current = index;
+    indicator.textContent = `${current + 1} / ${slides.length}`;
+  }
+
+  function nextSlide() { showSlide(current + 1); }
+  function prevSlide() { showSlide(current - 1); }
+
+  function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+      e.preventDefault();
+      nextSlide();
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault();
+      prevSlide();
+    } else if (e.key === 'Home') {
+      showSlide(0);
+    } else if (e.key === 'End') {
+      showSlide(slides.length - 1);
+    }
+  });
+</script>
+</body>
+</html>

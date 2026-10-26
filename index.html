@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>비엔아이소프트 (BNI SOFT) - 사내 AI 비서 · ERP · MES · 기업 업무 시스템 전문 파트너</title>
+    <meta name="description" content="비엔아이소프트(Business & Information)는 사내 구축형 AI 비서(On-Premise AI Assistant), 기업 업무 시스템(그룹웨어·기간업무), ERP·스마트 제조·MES·설비관제 시스템을 자문·개발·공급하는 소프트웨어 전문 기업입니다.">
+    <meta name="keywords" content="비엔아이소프트, BNISOFT, 사내 AI 비서, AI Agent, 로컬 LLM, MES 구축, ERP 연동, 설비관제, 그룹웨어 개발, 소프트웨어 자문 개발">
+    <meta name="author" content="비엔아이소프트 (대표 안동주)">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.bnisoft.co.kr/">
+    <link rel="icon" type="image/png" href="https://www.bnisoft.co.kr/assets/bnisoft.png">
+
+    <!-- Open Graph (카카오톡, 텔레그램, SNS 링크 공유 미리보기 및 검색엔진 최적화) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="비엔아이소프트">
+    <meta property="og:title" content="비엔아이소프트 - 현장 데이터를 가장 잘 아는 소프트웨어 파트너">
+    <meta property="og:description" content="사내 구축형 AI 비서(AI Assistant) · 기업 업무 시스템 자문/개발 · ERP·스마트 제조·MES·설비관제 구축 전문 파트너">
+    <meta property="og:url" content="https://www.bnisoft.co.kr/">
+    <meta property="og:image" content="https://www.bnisoft.co.kr/assets/bnisoft.png">
+    <meta property="og:locale" content="ko_KR">
+
+    <!-- Google 구조화 데이터 (JSON-LD Organization Schema) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "비엔아이소프트",
+      "alternateName": ["BNISOFT", "BNI SOFT", "Business & Information"],
+      "url": "https://www.bnisoft.co.kr/",
+      "logo": "https://www.bnisoft.co.kr/assets/bnisoft.png",
+      "founder": {
+        "@type": "Person",
+        "name": "안동주"
+      },
+      "description": "사내 AI 비서 구축, 기업 업무 시스템 자문·개발, ERP·스마트 제조·MES·설비관제 소프트웨어 전문 기업",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "인하로184번길 10",
+        "addressLocality": "미추홀구",
+        "addressRegion": "인천광역시",
+        "addressCountry": "KR"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+82-32-423-7752",
+        "email": "ahndj@bnisoft.co.kr",
+        "contactType": "customer service",
+        "areaServed": "KR",
+        "availableLanguage": "Korean"
+      }
+    }
+    </script>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #eff6ff;
+            --accent: #2563eb;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --border: #e2e8f0;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 36px 20px 64px;
+        }
+        .hero-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 44px 36px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+            margin-bottom: 28px;
+        }
+        .logo-wrap {
+            display: inline-block;
+            margin-bottom: 1px;
+        }
+        .logo-wrap img {
+            width: 155px;
+            height: auto;
+            border-radius: 16px;
+        }
+        .bni-sub {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.04em;
+            margin-bottom: 14px;
+        }
+        .badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--accent);
+            font-size: 0.86rem;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 999px;
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+        }
+        .hero-title {
+            font-size: 1.92rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.03em;
+            line-height: 1.35;
+            margin-bottom: 14px;
+            word-break: keep-all;
+        }
+        .hero-desc {
+            font-size: 1.04rem;
+            color: var(--text-sub);
+            max-width: 650px;
+            margin: 0 auto;
+            word-break: keep-all;
+        }
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 34px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(15, 23, 42, 0.03);
+        }
+        .section-header {
+            margin-bottom: 24px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 4px;
+        }
+        .section-title {
+            font-size: 1.38rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+        }
+        .biz-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px 20px;
+        }
+        .biz-icon {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+        }
+        .biz-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            word-break: keep-all;
+        }
+        .biz-list {
+            list-style: none;
+            font-size: 0.92rem;
+            color: var(--text-sub);
+        }
+        .biz-list li {
+            position: relative;
+            padding-left: 14px;
+            margin-bottom: 6px;
+            word-break: keep-all;
+        }
+        .biz-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+            border: 1px solid #bfdbfe;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin-top: 18px;
+        }
+        .highlight-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .highlight-text {
+            font-size: 0.94rem;
+            color: #1e3a8a;
+            word-break: keep-all;
+        }
+        .strength-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+        .strength-item {
+            padding: 16px 18px;
+            border-left: 3px solid var(--accent);
+            background: #f8fafc;
+            border-radius: 0 12px 12px 0;
+        }
+        .strength-item h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+        .strength-item p {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            word-break: keep-all;
+        }
+        .contact-card {
+            background: #0f172a;
+            color: #f8fafc;
+            border-radius: 20px;
+            padding: 34px 32px;
+        }
+        .contact-top {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            margin-bottom: 22px;
+        }
+        .contact-brand h3 {
+            font-size: 1.32rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+            letter-spacing: -0.02em;
+        }
+        .contact-brand .ceo {
+            font-size: 0.98rem;
+            color: #93c5fd;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .contact-brand .biz-type {
+            font-size: 0.88rem;
+            color: #94a3b8;
+        }
+        .contact-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #ffffff;
+        }
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 12px 24px;
+            font-size: 0.92rem;
+            color: #cbd5e1;
+        }
+        .contact-row {
+            display: flex;
+            gap: 10px;
+        }
+        .contact-label {
+            color: #94a3b8;
+            font-weight: 600;
+            min-width: 50px;
+        }
+        .contact-row a {
+            color: #f8fafc;
+            text-decoration: none;
+        }
+        .contact-row a:hover {
+            text-decoration: underline;
+        }
+        .visitor-wrap {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .visitor-badge {
+            display: inline-flex;
+            align-items: center;
+            opacity: 0.82;
+            transition: opacity 0.15s ease;
+        }
+        .visitor-badge:hover {
+            opacity: 1;
+        }
+        .visitor-badge img {
+            height: 20px;
+            border-radius: 4px;
+            display: block;
+        }
+        @media (max-width: 600px) {
+            .hero-card { padding: 32px 20px; }
+            .hero-title { font-size: 1.5rem; }
+            .section, .contact-card { padding: 24px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="hero-card">
+            <div class="logo-wrap">
+                <img src="assets/bnisoft.png" alt="비엔아이소프트 로고" />
+            </div>
+            <div class="bni-sub">Business &amp; Information</div>
+            <div>
+                <span class="badge">소프트웨어 자문, 개발 및 공급</span>
+            </div>
+            <h1 class="hero-title">
+                현장 데이터를 가장 잘 아는 소프트웨어 파트너,<br>비엔아이소프트
+            </h1>
+            <p class="hero-desc">
+                다년간 축적된 제조·설비 SI 구축 노하우(ERP·MES·생산관제·기간업무 연동)에<br>
+                <strong>'사내 구축형 AI 비서'</strong> 기술을 더해 기업의 비즈니스와 정보 시스템을 혁신합니다.
+            </p>
+        </header>
+
+        <section class="section">
+            <div class="section-header">
+                <div class="section-label">Core Solutions</div>
+                <h2 class="section-title">주요 사업 및 기술 영역</h2>
+            </div>
+            <div class="grid-3">
+                <div class="biz-card">
+                    <div class="biz-icon">🤖</div>
+                    <h3 class="biz-title">사내 AI 비서 (On-Premise AI Assistant) 구축</h3>
+                    <ul class="biz-list">
+                        <li>기존 ERP·MES·회계 등 사내 DB 직접 연동</li>
+                        <li>기밀 유출 없는 사내 AI 두뇌(로컬 LLM) 구축</li>
+                        <li>메신저·챗봇 기반 실시간 브리핑 및 경보</li>
+                    </ul>
+                </div>
+                <div class="biz-card">
+                    <div class="biz-icon">💻</div>
+                    <h3 class="biz-title">기업 업무 시스템 자문 · 개발 (그룹웨어 · 기간업무)</h3>
+                    <ul class="biz-list">
+                        <li>최신 웹 기반 그룹웨어 시스템 구축</li>
+                        <li>명함 스캔·과거 이력 검색 등 AI 연동</li>
+                        <li>기간업무(판매관리, 재고관리 등) 실무 밀착형 자동화</li>
+                    </ul>
+                </div>
+                <div class="biz-card">
+                    <div class="biz-icon">🏭</div>
+                    <h3 class="biz-title">ERP · 스마트 제조 · MES · 설비관제 구축</h3>
+                    <ul class="biz-list">
+                        <li>ERP·생산계획·작업지시·실적 및 LOT 추적 관리</li>
+                        <li>설비 및 센서 데이터 실시간 수집·관제</li>
+                        <li>기업·공장 현장 맞춤형 SI 개발 및 안정적 유지보수</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <div class="highlight-title">💡 기존 시스템을 바꾸지 않고 똑똑한 '사내 AI 비서'를 연결합니다</div>
+                <p class="highlight-text">
+                    새 프로그램을 처음부터 다시 만들 필요가 없습니다. 현재 사용 중인 ERP, MES, 회계 등 사내 DB에 AI 비서를 연결하여, 일상적인 말로 질문하면 필요한 통계를 뽑아주고 이상 징후 발생 시 담당자 스마트폰 메신저로 먼저 알려줍니다.
+                </p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-header">
+                <div class="section-label">Why BNISOFT</div>
+                <h2 class="section-title">비엔아이소프트만의 강점</h2>
+            </div>
+            <div class="strength-list">
+                <div class="strength-item">
+                    <h4>현장 중심의 실용주의 개발</h4>
+                    <p>보여주기식 화면이 아니라, 현장 작업자와 임원진이 매일 쓰는 핵심 기능을 가장 직관적이고 빠르게 구현합니다.</p>
+                </div>
+                <div class="strength-item">
+                    <h4>검증된 도메인 경험과 책임 유지보수</h4>
+                    <p>제조·설비·기간업무 현장을 깊이 이해하는 대표 엔지니어가 직접 자문·설계부터 구축, 연간 유지보수까지 책임집니다.</p>
+                </div>
+                <div class="strength-item">
+                    <h4>보안과 비용을 모두 잡은 AI</h4>
+                    <p>회계·원가·고객 정보 등 민감한 데이터는 사내 서버 안에서 안전하게 처리하고, 불필요한 클라우드 구독료 부담을 덜어드립니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="contact-card">
+            <div class="contact-top">
+                <div class="contact-brand">
+                    <h3>비엔아이소프트</h3>
+                    <!-- <div class="ceo">대표 안 동 주</div> -->
+                    <div class="biz-type">Business &amp; Information | 소프트웨어 자문, 개발 및 공급</div>
+                </div>
+                <!-- <div class="contact-actions">
+                    <a href="tel:010-8864-3918" class="btn btn-primary">📞 전화 상담</a>
+                    <a href="mailto:ahndj@bnisoft.co.kr" class="btn btn-outline">✉️ 이메일 문의</a>
+                </div> -->
+            </div>
+            <div class="contact-grid">
+                <div class="contact-row">
+                    <span class="contact-label">주소 :</span>
+                    <span>인천광역시 미추홀구 인하로 184번길 10</span>
+                </div>
+                <div class="contact-row">
+                    <span class="contact-label">E-mail :</span>
+                    <a href="mailto:ahndj@bnisoft.co.kr">ahndj@bnisoft.co.kr</a>
+                </div>
+            </div>
+            <div class="visitor-wrap">
+                <span>&copy; BNISOFT. All rights reserved.</span>
+                <a href="https://hits.sh/www.bnisoft.co.kr/" target="_blank" rel="noopener noreferrer" class="visitor-badge" title="일별 방문자 통계 보기">
+                    <img src="https://hits.sh/www.bnisoft.co.kr.svg?view=today-total&style=flat-square&label=Visitors&color=1e3a8a&labelColor=1e293b" alt="방문자 수 (오늘 / 누적)" />
+                </a>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>
