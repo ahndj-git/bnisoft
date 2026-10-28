@@ -242,23 +242,23 @@
         .contact-card {
             background: #0f172a;
             color: #f8fafc;
-            border-radius: 20px;
-            padding: 34px 32px;
+            border-radius: 16px;
+            padding: 20px 24px;
         }
         .contact-top {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
-            align-items: flex-start;
-            gap: 20px;
-            padding-bottom: 22px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-            margin-bottom: 22px;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 12px;
         }
         .contact-brand h3 {
-            font-size: 1.32rem;
+            font-size: 1.15rem;
             font-weight: 800;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             letter-spacing: -0.02em;
         }
         .contact-brand .ceo {
@@ -268,7 +268,7 @@
             margin-bottom: 4px;
         }
         .contact-brand .biz-type {
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             color: #94a3b8;
         }
         .contact-actions {
@@ -295,20 +295,21 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 12px 24px;
-            font-size: 0.92rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 24px;
+            font-size: 0.85rem;
             color: #cbd5e1;
         }
         .contact-row {
             display: flex;
-            gap: 10px;
+            align-items: center;
+            gap: 8px;
         }
         .contact-label {
             color: #94a3b8;
             font-weight: 600;
-            min-width: 50px;
         }
         .contact-row a {
             color: #f8fafc;
@@ -318,15 +319,15 @@
             text-decoration: underline;
         }
         .visitor-wrap {
-            margin-top: 20px;
-            padding-top: 16px;
+            margin-top: 12px;
+            padding-top: 10px;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
-            font-size: 0.8rem;
+            gap: 8px;
+            font-size: 0.78rem;
             color: #64748b;
         }
         .visitor-badge {
@@ -346,7 +347,20 @@
         @media (max-width: 600px) {
             .hero-card { padding: 32px 20px; }
             .hero-title { font-size: 1.5rem; }
-            .section, .contact-card { padding: 24px 20px; }
+            .section { padding: 24px 20px; }
+            .contact-card { padding: 18px 16px; }
+            .contact-grid {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .contact-row {
+                flex-direction: row;
+                gap: 6px;
+            }
+            .contact-label {
+                min-width: 45px;
+            }
         }
     </style>
 </head>
